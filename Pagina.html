@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Citas Web Scraping</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+  <h1>Citas Extraídas del Web Scraping</h1>
+  <table id="tabla-citas">
+    <thead>
+      <tr>
+        <th>Cita</th>
+        <th>Autor</th>
+        <th>Etiquetas</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    async function cargarCSV() {
+      const response = await fetch('citas_limpias.csv');
+      const texto = await response.text();
+
+      const filas = texto.trim().split('\n').slice(1); // saltar encabezado
+      const tabla = document.querySelector('#tabla-citas tbody');
+
+      filas.forEach(fila => {
+        // Manejo básico de CSV: dividir en comas, respetando comillas
+        const columnas = fila.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
+
+        if (columnas && columnas.length >= 3) {
+          const tr = document.createElement('tr');
+          for (let i = 0; i < 3; i++) {
+            const td = document.createElement('td');
+            td.textContent = columnas[i]?.replace(/^"|"$/g, '').replace(/""/g, '"') || '';
+            tr.appendChild(td);
+          }
+          tabla.appendChild(tr);
+        }
+      });
+    }
+
+    cargarCSV();
+  </script>
+</body>
+</html>
+
